@@ -4,8 +4,8 @@ Customize these parameters based on your trading preferences
 """
 
 # ==================== EXCHANGE SETTINGS ====================
-EXCHANGE = "KCEX"  # Primary exchange
-FALLBACK_EXCHANGE = "Binance"  # For price data if KCEX API unavailable
+EXCHANGE = "BLOFIN"  # Primary exchange
+FALLBACK_EXCHANGE = "Binance"  # For price data if BLOFIN API unavailable
 
 # ==================== ACCOUNT SETTINGS ====================
 ACCOUNT_BALANCE = 100.0  # Total account balance in USD
@@ -102,10 +102,10 @@ BINANCE_API_KEY = ""  # Optional: Add if you need authenticated endpoints
 BINANCE_SECRET_KEY = ""
 BINANCE_BASE_URL = "https://api.binance.com"
 
-# KCEX API (if available)
-KCEX_API_KEY = ""  # Add your KCEX API key if available
-KCEX_SECRET_KEY = ""
-KCEX_BASE_URL = "https://api.kcex.com"  # Verify actual KCEX API URL
+# BLOFIN API (if available)
+BLOFIN_API_KEY = ""  # Add your BLOFIN API key if available
+BLOFIN_SECRET_KEY = ""
+BLOFIN_BASE_URL = "https://openapi.blofin.com"  # BLOFIN API URL
 
 # ==================== LOGGING SETTINGS ====================
 LOG_LEVEL = "INFO"  # DEBUG, INFO, WARNING, ERROR

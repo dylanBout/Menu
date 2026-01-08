@@ -53,9 +53,9 @@ def generate_test_price_data(
     # Use geometric Brownian motion for realistic price movement
     np.random.seed(42)  # For reproducibility
 
-    # Parameters
-    volatility = 0.02  # 2% volatility per candle
-    drift = 0.0001  # Slight upward drift
+    # Parameters - realistic for 5min crypto candles
+    volatility = 0.0015  # 0.15% volatility per candle (realistic for BTC)
+    drift = 0.00001  # Very slight upward drift
 
     # Generate returns
     returns = np.random.normal(drift, volatility, num_candles)

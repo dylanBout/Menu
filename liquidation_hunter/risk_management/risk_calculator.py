@@ -76,8 +76,10 @@ class RiskCalculator:
         actual_margin = position_size / leverage
 
         # Calculate liquidation price
+        # For shorts: stop_loss > entry (price going up against you)
+        # For longs: stop_loss < entry (price going down against you)
         liquidation_price = self.calculate_liquidation_price(
-            entry_price, leverage, "long" if entry_price < stop_loss_price else "short"
+            entry_price, leverage, "short" if stop_loss_price > entry_price else "long"
         )
 
         result = {
