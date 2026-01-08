@@ -1,6 +1,7 @@
 """
 Liquidation Data Fetcher
 Fetches real-time and historical liquidation data from Coinglass API
+Falls back to Binance FREE liquidation data if Coinglass unavailable
 """
 
 import requests
@@ -18,6 +19,14 @@ import config
 
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL))
 logger = logging.getLogger(__name__)
+
+# Try to import Binance liquidation fetcher (FREE fallback)
+try:
+    from data.binance_liquidations import BinanceLiquidationFetcher
+    BINANCE_AVAILABLE = True
+except ImportError:
+    BINANCE_AVAILABLE = False
+    logger.warning("Binance liquidation fetcher not available")
 
 
 class LiquidationDataFetcher:
@@ -37,7 +46,16 @@ class LiquidationDataFetcher:
         if self.api_key:
             self.session.headers.update({"CG-API-KEY": self.api_key})
 
-        logger.info("LiquidationDataFetcher initialized")
+        # Initialize Binance fallback (FREE)
+        self.binance_fetcher = None
+        if BINANCE_AVAILABLE:
+            try:
+                self.binance_fetcher = BinanceLiquidationFetcher()
+                logger.info("LiquidationDataFetcher initialized (with Binance FREE fallback)")
+            except Exception as e:
+                logger.warning(f"Binance fallback init failed: {e}")
+        else:
+            logger.info("LiquidationDataFetcher initialized (Coinglass only)")
 
     def get_liquidation_heatmap(
         self,
@@ -103,8 +121,21 @@ class LiquidationDataFetcher:
         min_volume = min_volume or config.MIN_LIQUIDATION_VOLUME
         heatmap_df = self.get_liquidation_heatmap(symbol)
 
+        # Try Binance FREE fallback if Coinglass fails
+        if (heatmap_df is None or heatmap_df.empty) and self.binance_fetcher:
+            logger.info(f"Coinglass unavailable - using Binance FREE liquidations for {symbol}")
+            try:
+                binance_clusters = self.binance_fetcher.calculate_liquidation_clusters(
+                    symbol, current_price, min_cluster_value=min_volume
+                )
+                if binance_clusters:
+                    logger.info(f"Found {len(binance_clusters)} clusters from Binance FREE data")
+                    return binance_clusters
+            except Exception as e:
+                logger.warning(f"Binance fallback failed: {e}")
+
         if heatmap_df is None or heatmap_df.empty:
-            logger.warning(f"No heatmap data for {symbol}")
+            logger.warning(f"No liquidation data available for {symbol}")
             return []
 
         # Filter significant clusters
