@@ -24,7 +24,14 @@ DEFAULT_LEVERAGE = 60  # Default leverage for backtesting
 # ==================== TRADING PAIRS ====================
 TRADING_PAIRS = [
     "BTCUSDT",
-    "ETHUSDT"
+    "ETHUSDT",
+    "SOLUSDT",    # Solana
+    "PEPEUSDT",   # Pepe memecoin
+    # Add more pairs as needed:
+    # "DOGEUSDT",
+    # "ADAUSDT",
+    # "AVAXUSDT",
+    # "LINKUSDT",
 ]
 
 # ==================== TIMEFRAMES ====================
