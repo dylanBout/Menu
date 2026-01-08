@@ -8,3 +8,5 @@ outputs/
 *.swo
 .vscode/
 .idea/
+config_local.py
+.env

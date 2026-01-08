@@ -94,7 +94,7 @@ SLIPPAGE_PERCENT = 0.1  # 0.1% slippage
 
 # ==================== API SETTINGS ====================
 # Coinglass API for liquidation data
-COINGLASS_API_KEY = ""  # Add your Coinglass API key here
+COINGLASS_API_KEY = ""  # Add your Coinglass API key here (or use config_local.py)
 COINGLASS_BASE_URL = "https://open-api.coinglass.com/public/v2"
 
 # Binance API (for price data fallback)
@@ -158,3 +158,10 @@ try:
     validate_config()
 except ValueError as e:
     print(f"WARNING: {e}")
+
+# Import local configuration overrides (API keys, etc.)
+# This allows you to keep sensitive data out of version control
+try:
+    from config_local import *
+except ImportError:
+    pass  # config_local.py is optional
