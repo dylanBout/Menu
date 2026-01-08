@@ -1,0 +1,16 @@
+# Liquidation Hunter Trading System - Python Dependencies
+
+# Data manipulation and analysis
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP requests and API calls
+requests>=2.31.0
+
+# Logging and utilities
+python-dateutil>=2.8.2
+
+# Optional: For enhanced features
+# matplotlib>=3.7.0  # For chart generation (optional)
+# plotly>=5.14.0     # For interactive charts (optional)
+# ta-lib>=0.4.0      # For advanced technical indicators (optional, requires C library)
