@@ -94,7 +94,7 @@ function JobCard({ job, onOpen, onDelete, onComplete, onArchive, selected, onSel
 }
 
 // ─── Main ListView ────────────────────────────────────────────────────────────
-export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, onComplete, onMutate, onSettings, onTemplates, activeId = null, compact = false }) {
+export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, onComplete, onMutate, activeId = null, compact = false }) {
   const [search, setSearch]             = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDate, setFilterDate]     = useState('all');
@@ -310,23 +310,6 @@ export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, 
         )}
       </div>
 
-      {/* Bottom Nav */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: T.surface, borderTop: `1px solid ${T.border}`, display: 'flex', paddingBottom: 'env(safe-area-inset-bottom)', zIndex: 100 }}>
-        <NavTab icon="📋" label="Jobs" active={true} onClick={() => {}} />
-        <NavTab icon="➕" label="New WO" active={false} onClick={onNew} accent />
-        <NavTab icon="📑" label="Templates" active={false} onClick={onTemplates} />
-        <NavTab icon="⚙️" label="Settings" active={false} onClick={onSettings} />
-      </div>
     </div>
-  );
-}
-
-function NavTab({ icon, label, active, onClick, accent = false }) {
-  return (
-    <button onClick={onClick} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px 4px 8px', background: accent ? T.blue : 'transparent', border: 'none', cursor: 'pointer', color: accent ? '#fff' : active ? T.blue : T.muted, position: 'relative' }}>
-      {active && !accent && <div style={{ position: 'absolute', top: 0, left: '25%', right: '25%', height: 2, background: T.blue, borderRadius: 99 }} />}
-      <span style={{ fontSize: 20, lineHeight: 1, marginBottom: 3 }}>{icon}</span>
-      <span style={{ fontSize: 10, fontWeight: active || accent ? 700 : 500, fontFamily: 'Inter,system-ui,sans-serif' }}>{label}</span>
-    </button>
   );
 }

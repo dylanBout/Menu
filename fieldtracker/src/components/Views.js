@@ -50,7 +50,7 @@ export function NewJobView({ onBack, onCreate, templates, defaultLocation }) {
   return (
     <div style={{ fontFamily: 'Inter,system-ui,sans-serif', background: T.bg, color: T.text }} className="app-min">
       <Header left={<Btn ghost small onClick={onBack}>← Back</Btn>} center="New Work Order" right={<div />} />
-      <div style={{ padding: 16 }}>
+      <div style={{ padding: '16px 16px 90px' }}>
 
         {templates.length > 0 && (
           <div style={{ marginBottom: 16 }}>
@@ -579,7 +579,7 @@ export function SettingsView({ onBack, settings, onSave }) {
     <div style={{ fontFamily: 'Inter,system-ui,sans-serif', background: T.bg, color: T.text, fontSize: fontSize === 'large' ? 16 : 14 }} className="app-min">
       {toast && <Toast message={toast.message} type={toast.type} onDone={hideToast} />}
       <Header left={<Btn ghost small onClick={onBack}>← Back</Btn>} center="Settings" right={<Btn small onClick={save}>Save</Btn>} />
-      <div style={{ padding: 16 }}>
+      <div style={{ padding: '16px 16px 90px' }}>
 
         <div style={{ marginBottom: 20 }}>
           <Label>OpenAI API Key</Label>
@@ -682,7 +682,7 @@ export function TemplatesView({ onBack, templates, onSave }) {
         center={editing === 'new' ? 'New Template' : 'Edit Template'}
         right={<Btn small onClick={saveTemplate}>Save</Btn>}
       />
-      <div style={{ padding: 16 }}>
+      <div style={{ padding: '16px 16px 90px' }}>
         <TextInput label="Template Name" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Flushmate Rebuild" autoFocus />
         <div style={{ marginBottom: 14 }}>
           <Label>Default Priority</Label>
@@ -719,7 +719,7 @@ export function TemplatesView({ onBack, templates, onSave }) {
   return (
     <div style={{ fontFamily: 'Inter,system-ui,sans-serif', background: T.bg, color: T.text }} className="app-min">
       <Header left={<Btn ghost small onClick={onBack}>← Back</Btn>} center="Job Templates" right={<Btn small onClick={startNew}>+ New</Btn>} />
-      <div style={{ padding: 14 }}>
+      <div style={{ padding: '14px 14px 90px' }}>
         {list.length === 0 && (
           <div style={{ textAlign: 'center', padding: '50px 20px', color: T.muted }}>
             <div style={{ fontSize: 32, marginBottom: 10 }}>📋</div>

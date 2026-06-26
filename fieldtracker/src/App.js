@@ -8,14 +8,13 @@ import ChatView from './components/ChatView';
 import { NewJobView, SettingsView, TemplatesView } from './components/Views';
 
 export default function App() {
-  const [jobs, setJobs]         = useState(loadJobs);
-  const [settings, setSettings] = useState(loadSettings);
+  const [jobs, setJobs]           = useState(loadJobs);
+  const [settings, setSettings]   = useState(loadSettings);
   const [templates, setTemplates] = useState(loadTemplates);
-  const [view, setView]         = useState('list');
-  const [activeId, setActiveId] = useState(null);
+  const [view, setView]           = useState('list');
+  const [activeId, setActiveId]   = useState(null);
   const { wide } = useViewport();
 
-  // Register service worker
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -23,7 +22,6 @@ export default function App() {
   }, []);
 
   const active = jobs.find(j => j.id === activeId) || null;
-
   const go = (v, id = null) => { setView(v); if (id !== null) setActiveId(id); };
 
   function mutate(id, patch) {
@@ -45,11 +43,10 @@ export default function App() {
     if (!window.confirm('Delete this work order? This cannot be undone.')) return;
     const next = jobs.filter(j => j.id !== id);
     setJobs(next); persistJobs(next);
-    pruneOrphans(next); // remove this job's photos from IndexedDB
+    pruneOrphans(next);
     if (activeId === id) setView('list');
   }
 
-  // No per-item confirm — caller (bulk actions) confirms once for the whole set.
   function deleteJobs(ids) {
     const set = new Set(ids);
     const next = jobs.filter(j => !set.has(j.id));
@@ -77,19 +74,16 @@ export default function App() {
     go('chat', copy.id);
   }
 
-  function saveSettingsAndBack(s) {
-    setSettings(s); saveSettings(s); setView('list');
+  function handleSaveSettings(s) {
+    setSettings(s); saveSettings(s);
+    // stays on settings — user navigates away via the bottom nav
   }
 
   function saveTemplatesAndContinue(t) {
     setTemplates(t); saveTemplates(t);
   }
 
-  // ─── View composition ──────────────────────────────────────────────────────
-  // The list is always available. In wide (Fold open) mode it lives in a left
-  // pane and the "active" view fills the right pane. In narrow (cover screen)
-  // mode we show a single full-screen view at a time, exactly as before.
-
+  // ─── List pane (always rendered in wide mode, or when view==='list') ────────
   const listPane = (
     <ListView
       jobs={jobs}
@@ -99,15 +93,11 @@ export default function App() {
       onDeleteMany={deleteJobs}
       onComplete={completeJob}
       onMutate={mutate}
-      onSettings={() => go('settings')}
-      onTemplates={() => go('templates')}
       activeId={wide ? activeId : null}
       compact={wide}
     />
   );
 
-  // In wide mode, "back" from a job-level view returns to the empty right pane
-  // (the list stays visible on the left) instead of replacing the whole screen.
   const backToList = () => (wide ? go('list', null) : setView('list'));
 
   function renderActiveView() {
@@ -137,23 +127,51 @@ export default function App() {
         );
 
       case 'settings':
-        return <SettingsView onBack={backToList} settings={settings} onSave={saveSettingsAndBack} />;
+        return <SettingsView onBack={backToList} settings={settings} onSave={handleSaveSettings} />;
 
       case 'templates':
         return <TemplatesView onBack={backToList} templates={templates} onSave={saveTemplatesAndContinue} />;
 
       case 'list':
       default:
-        return <EmptyPane onNew={() => go('new')} />;
+        return wide ? <EmptyPane onNew={() => go('new')} /> : null;
     }
   }
 
-  // ─── Wide (Fold open): two panes side by side ───────────────────────────────
+  // ─── Bottom nav ─────────────────────────────────────────────────────────────
+  // Hidden only when the user is inside a job's chat (ChatView has its own nav).
+  const showNav = view !== 'chat';
+
+  function BottomNavBar({ fixed = false }) {
+    const s = fixed
+      ? { position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100 }
+      : {};
+    return (
+      <div style={{
+        ...s,
+        background: T.surface,
+        borderTop: `1px solid ${T.border}`,
+        display: 'flex',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}>
+        <NavTab icon="📋" label="Jobs"      active={view === 'list'}      onClick={() => go('list')} />
+        <NavTab icon="➕" label="New WO"    active={view === 'new'}       onClick={() => go('new')} accent />
+        <NavTab icon="📑" label="Templates" active={view === 'templates'} onClick={() => go('templates')} />
+        <NavTab icon="⚙️" label="Settings"  active={view === 'settings'}  onClick={() => go('settings')} />
+      </div>
+    );
+  }
+
+  // ─── Wide (Fold open): two panes side by side ────────────────────────────────
+  // Nav is pinned at the bottom of the left pane via flexbox (not position:fixed).
   if (wide) {
     return (
       <div className="app-fill" style={{ display: 'flex', background: T.bg, color: T.text, fontFamily: 'Inter,system-ui,sans-serif', overflow: 'hidden' }}>
-        <div style={{ width: 360, flexShrink: 0, borderRight: `1px solid ${T.border}`, height: '100%', overflowY: 'auto' }}>
-          {listPane}
+        <div style={{ width: 360, flexShrink: 0, borderRight: `1px solid ${T.border}`, height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {listPane}
+          </div>
+          <BottomNavBar />
         </div>
         <div style={{ flex: 1, height: '100%', overflowY: 'auto', position: 'relative' }}>
           {renderActiveView()}
@@ -162,12 +180,36 @@ export default function App() {
     );
   }
 
-  // ─── Narrow (cover screen): single full-screen view ─────────────────────────
-  if (view === 'list') return listPane;
-  return renderActiveView();
+  // ─── Narrow (cover screen): single full-screen view + fixed bottom nav ───────
+  // Chat gets the full screen; all other views share the persistent nav.
+  if (view === 'chat') return renderActiveView();
+
+  return (
+    <>
+      {view === 'list' ? listPane : renderActiveView()}
+      {showNav && <BottomNavBar fixed />}
+    </>
+  );
 }
 
-// Right-pane placeholder shown on the open Fold when no job is selected.
+function NavTab({ icon, label, active, onClick, accent = false }) {
+  return (
+    <button onClick={onClick} style={{
+      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '10px 4px 8px',
+      background: accent ? T.blue : 'transparent', border: 'none',
+      cursor: 'pointer', color: accent ? '#fff' : active ? T.blue : T.muted,
+      position: 'relative', fontFamily: 'Inter,system-ui,sans-serif',
+    }}>
+      {active && !accent && (
+        <div style={{ position: 'absolute', top: 0, left: '25%', right: '25%', height: 2, background: T.blue, borderRadius: 99 }} />
+      )}
+      <span style={{ fontSize: 20, lineHeight: 1, marginBottom: 3 }}>{icon}</span>
+      <span style={{ fontSize: 10, fontWeight: active || accent ? 700 : 500 }}>{label}</span>
+    </button>
+  );
+}
+
 function EmptyPane({ onNew }) {
   return (
     <div className="app-fill" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: T.muted, padding: 32 }}>
