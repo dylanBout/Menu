@@ -1,0 +1,24 @@
+{
+  "short_name": "Field Tracker",
+  "name": "Zampell Field Tracker",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#111827",
+  "background_color": "#09101f",
+  "description": "Field work order tracker for Zampell facilities technicians"
+}
