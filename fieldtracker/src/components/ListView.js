@@ -197,12 +197,10 @@ export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, 
       {/* Header */}
       <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}`, padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <div>
-          <div style={{ fontWeight: 800, fontSize: 16 }}>⚙️ Field Tracker</div>
+          <div style={{ fontWeight: 800, fontSize: 16 }}>🔧 Field Tracker</div>
           <div style={{ fontSize: 11, color: T.muted }}>Zampell — MGB Sites</div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <Btn ghost small onClick={onTemplates} style={{ color: T.muted }} title="Templates">📋</Btn>
-          <Btn ghost small onClick={onSettings} style={{ color: T.muted }} title="Settings">⚙️</Btn>
           <Btn ghost small onClick={() => { setSelectMode(s => !s); setSelected(new Set()); }}
             style={{ color: selectMode ? T.blue : T.muted, borderColor: selectMode ? T.blue : T.border }}>
             {selectMode ? 'Done' : '☑'}
@@ -290,7 +288,7 @@ export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, 
       </div>
 
       {/* List */}
-      <div style={{ padding: '10px 14px 100px' }}>
+      <div style={{ padding: '10px 14px 120px' }}>
         {jobs.length === 0 && (
           <div style={{ textAlign: 'center', padding: '70px 20px', color: T.muted }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>🔧</div>
@@ -311,6 +309,24 @@ export default function ListView({ jobs, onNew, onOpen, onDelete, onDeleteMany, 
           <div style={{ textAlign: 'center', fontSize: 11, color: T.faint + '80', marginTop: 4 }}>← Swipe left to complete, archive, or delete</div>
         )}
       </div>
+
+      {/* Bottom Nav */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: T.surface, borderTop: `1px solid ${T.border}`, display: 'flex', paddingBottom: 'env(safe-area-inset-bottom)', zIndex: 100 }}>
+        <NavTab icon="📋" label="Jobs" active={true} onClick={() => {}} />
+        <NavTab icon="➕" label="New WO" active={false} onClick={onNew} accent />
+        <NavTab icon="📑" label="Templates" active={false} onClick={onTemplates} />
+        <NavTab icon="⚙️" label="Settings" active={false} onClick={onSettings} />
+      </div>
     </div>
+  );
+}
+
+function NavTab({ icon, label, active, onClick, accent = false }) {
+  return (
+    <button onClick={onClick} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px 4px 8px', background: accent ? T.blue : 'transparent', border: 'none', cursor: 'pointer', color: accent ? '#fff' : active ? T.blue : T.muted, position: 'relative' }}>
+      {active && !accent && <div style={{ position: 'absolute', top: 0, left: '25%', right: '25%', height: 2, background: T.blue, borderRadius: 99 }} />}
+      <span style={{ fontSize: 20, lineHeight: 1, marginBottom: 3 }}>{icon}</span>
+      <span style={{ fontSize: 10, fontWeight: active || accent ? 700 : 500, fontFamily: 'Inter,system-ui,sans-serif' }}>{label}</span>
+    </button>
   );
 }

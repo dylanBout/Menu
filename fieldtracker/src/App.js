@@ -5,7 +5,7 @@ import { useViewport } from './hooks';
 import { T } from './utils/constants';
 import ListView from './components/ListView';
 import ChatView from './components/ChatView';
-import { NewJobView, EditJobView, NotesView, SettingsView, TemplatesView } from './components/Views';
+import { NewJobView, SettingsView, TemplatesView } from './components/Views';
 
 export default function App() {
   const [jobs, setJobs]         = useState(loadJobs);
@@ -131,36 +131,8 @@ export default function App() {
             onUpdate={p => mutate(active.id, p)}
             onBack={backToList}
             onDelete={() => { deleteJob(active.id); }}
-            onNotes={() => go('notes')}
-            onEdit={() => go('edit')}
             apiKey={settings.apiKey || ''}
             hideBack={wide}
-          />
-        );
-
-      case 'notes':
-        if (!active) return wide ? <EmptyPane onNew={() => go('new')} /> : (backToList(), null);
-        return (
-          <NotesView
-            job={active}
-            onUpdate={p => {
-              mutate(active.id, p);
-              if (settings.autoComplete && p.finalNotes) {
-                mutate(active.id, { status: 'complete', endTime: Date.now() });
-              }
-            }}
-            onBack={() => go('chat')}
-            apiKey={settings.apiKey || ''}
-          />
-        );
-
-      case 'edit':
-        if (!active) return wide ? <EmptyPane onNew={() => go('new')} /> : (backToList(), null);
-        return (
-          <EditJobView
-            job={active}
-            onSave={p => { mutate(active.id, p); go('chat'); }}
-            onBack={() => go('chat')}
           />
         );
 
