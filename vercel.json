@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd fieldtracker && npm install && npm run build",
+  "outputDirectory": "fieldtracker/build",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
